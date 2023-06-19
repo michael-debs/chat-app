@@ -2,11 +2,9 @@ const http = require('http');
 const { client } = require('websocket');
 const websocketServer = require('websocket').server;
 
-let num = 0;
+let num = -1;
 
-const clients = {
-    count: 0
-}
+const clients = []
 
 const httpServer = http.createServer((req, res) => {
     res.header('Access-Control-Allow-Origin', '*');
@@ -22,14 +20,21 @@ wsServer.on("request", request => {
     // connect
     const connection = request.accept(null, request.origin)
     connection.on("close", () => {
-        console.log("Closed")
-        clients.count--
+        console.log("Connection closed for id: " + clientId)
+        for (let i = 0; i < clients.length; i++) {
+            const client = clients[i];
+            if (client.id == clientId) {
+                clients.pop(client)
+            }
+        }
+        console.log("Clients remaining: " + clients.length);
     })
     connection.on("message", (data) => {
         let message = JSON.parse(data.utf8Data)
-        for (let i = 0; i < clients.count; i++) {
-            if (clientId != i + 1) {
-                let client = clients[i + 1]
+        console.log(message.message + ' by ' + message.name + ' Client id: ' + clientId);
+        for (let i = 0; i < clients.length; i++) {
+            if (clientId != clients[i].id) {
+                let client = clients[i]
                 client.connection.send(JSON.stringify(message))
             }
         }
@@ -37,13 +42,13 @@ wsServer.on("request", request => {
 
     // generate a client id
     const clientId = generateId()
-    clients[clientId] = {
-        connection: connection,
-        id: clientId
-    }
-
+    clients.push({
+        id: clientId,
+        connection: connection
+    })
+    
     clients.count++
-    console.log(`Client logged with id: ${clientId}, and connection ${connection}\nthe number of clients is: ${clients.count}`);
+    console.log(`Client logged with id: ${clientId}\nthe number of clients is: ${clients.length}`);
 })
 
 function generateId() {
