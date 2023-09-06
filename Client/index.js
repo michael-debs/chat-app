@@ -3,18 +3,13 @@ const message = document.querySelector('#message')
 const send = document.querySelector('#send')
 const username = document.querySelector('#username')
 
-// const ws = new WebSocket("wss://fantastic-achieved-comfort.glitch.me")
-const ws = new WebSocket("wss://fantastic-achieved-comfort.glitch.me")
+const ws = new WebSocket("wss://brindle-berry-freeze.glitch.me")
 
 ws.onmessage = data => {
     let message = JSON.parse(data.data)
     appendToChat(message.name, message.message)
     chat.scrollTop = chat.scrollHeight
 }
-
-// setTimeout(() => {
-//     ws.send("Hello I am Client!!")
-// }, 2000);
 
 send.addEventListener('click', e => {
     window.localStorage.setItem("username", username.value)
