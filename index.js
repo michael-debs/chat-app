@@ -1,5 +1,4 @@
 const http = require('http');
-const { client } = require('websocket');
 const websocketServer = require('websocket').server;
 
 let num = -1;
